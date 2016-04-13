@@ -181,6 +181,8 @@ class DatabaseScheduler(Scheduler):
 
             last, ts = self._last_timestamp, self.Changes.last_change()
         except DATABASE_ERRORS as exc:
+            # as per https://github.com/celery/django-celery/commit/f2ad0848e3f55ee9a4c5d3ffeff62f4d54036ed7
+            transaction.get_connection().close_if_unusable_or_obsolete()
             error('Database gave error: %r', exc, exc_info=1)
             return False
         try:
